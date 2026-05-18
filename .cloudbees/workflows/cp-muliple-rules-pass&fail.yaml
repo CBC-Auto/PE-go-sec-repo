@@ -1,4 +1,4 @@
-name: CP Muliple Rules-Pass&Fail
+name: CP Muliple Rules-Pass-Fail
 apiVersion: automation.cloudbees.io/v1alpha1
 kind: workflow
 on:
