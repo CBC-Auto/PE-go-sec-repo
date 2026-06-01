@@ -1,0 +1,30 @@
+name: Require-approval-Policy
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+on:
+  workflow_dispatch:
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  scan-and-evaluate:
+    outputs:
+      policy-subject: ${{ steps.gosec-step.outputs.policy-subject }}
+    steps:
+        - name: checkout-source-code
+          id: getscm
+          uses: cloudbees-io/checkout@v1
+        
+        - id: gosec-step
+          uses: cloudbees-io/gosec-plugin@v1
+
+  policy-evaluation:
+    uses: cloudbees-io/policy-utils/evaluate-policy/workflow.yml@v0.1
+    needs:
+    - scan-and-evaluate
+    with:
+      policy-id: 99de52b5-3669-4321-809a-98c2aeff08b0
+      input-data: ${{ needs.scan-and-evaluate.outputs.policy-subject }}
+  
+
