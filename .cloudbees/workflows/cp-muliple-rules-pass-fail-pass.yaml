@@ -9,6 +9,8 @@ permissions:
   id-token: write
 jobs:
   scan-and-evaluate:
+    outputs:
+      policy-subject: ${{ steps.gosec-step.outputs.policy-subject }}
     steps:
       - name: Checkout Source Code
         uses: cloudbees-io/checkout@v2
@@ -29,10 +31,15 @@ jobs:
           echo "Low: ${{ steps.gosec-step.outputs.low-count }}"
           echo "Policy Subject: ${{ steps.gosec-step.outputs.policy-subject }}"
 
-      - name: Run policy check
-        id: policy-check
-        uses: cloudbees-io/policy-check@v1.0.1
-        with:
-          policy: c3493d27-0abf-4028-9ad2-9f1e8262fb41
-          input-data: ${{ steps.gosec-step.outputs.policy-subject }}
+  policy-evaluation:
+    uses: cloudbees-io/policy-utils/evaluate-policy-context/workflow.yml@v1.2
+    needs:
+    - scan-and-evaluate
+    with:
+      input-data: ${{ needs.scan-and-evaluate.outputs.policy-subject }}
+      checkpoint-type: workflow
+      checkpoint-position: within
+
+
+
 
