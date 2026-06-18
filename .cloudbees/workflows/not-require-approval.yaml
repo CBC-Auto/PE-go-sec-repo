@@ -20,12 +20,13 @@ jobs:
           uses: cloudbees-io/gosec-plugin@v1
 
   policy-evaluation:
-    uses: cloudbees-io/policy-utils/evaluate-policy/workflow.yml@v0.1
+    uses: cloudbees-io/policy-utils/evaluate-policy-context/workflow.yml@v1.2
     needs:
     - scan-and-evaluate
     with:
-      policy-id: abc6bfab-c0e1-42f7-a67a-6fe7d6d7e708
       input-data: ${{ needs.scan-and-evaluate.outputs.policy-subject }}
+      checkpoint-type: workflow
+      checkpoint-position: within
   
 
 
